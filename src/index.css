@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-navy-base: #0F1432;
+    --color-navy-card: #171D3B;
+    --color-navy-elevated: #202744;
+    --color-navy-border: #343957;
+    --color-gold: #FFAA00;
+    --color-red: #FF001E;
+    --color-text-main: #F4F2EA;
+    --color-text-muted: #A7ADC3;
+  }
+
+  body {
+    background-color: #0F1432;
+    color: #F4F2EA;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Bebas Neue', 'Oswald', 'Impact', sans-serif;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Custom Scrollbar for Navy Theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0F1432;
+}
+::-webkit-scrollbar-thumb {
+  background: #343957;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FFAA00;
+}
+
+/* Geometric Brand Utilities */
+.chamfer-tr {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+
+.chamfer-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+
+.chamfer-both {
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+
+.gold-accent-left {
+  border-left: 3px solid #FFAA00;
+}
+
+.red-accent-left {
+  border-left: 3px solid #FF001E;
+}
+
+.editorial-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(52, 57, 87, 0.2),
+    rgba(52, 57, 87, 0.2) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+}
+
+.gold-diagonal-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 170, 0, 0.15),
+    rgba(255, 170, 0, 0.15) 3px,
+    transparent 3px,
+    transparent 9px
+  );
+}
+

@@ -144,6 +144,8 @@ export interface UserSettings {
   reminderTime: string;
   defaultFrequency: TrackingFrequency;
   defaultExpectedDays: number[];
+  notificationEnabled?: boolean;
+  excludeWeekends?: boolean;
 }
 
 export interface WorkPulseState {

@@ -3,6 +3,7 @@ import { WorkPulseProvider, useWorkPulse } from './context/WorkPulseContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { MobileNav } from './components/layout/MobileNav';
+import { InstallPromptBanner } from './components/layout/InstallPromptBanner';
 
 // Views
 import { DashboardView } from './components/dashboard/DashboardView';
@@ -39,6 +40,9 @@ const AppContent: React.FC = () => {
           isMobileMenuOpen={isMobileMenuOpen}
           onToggleMobileMenu={() => setIsMobileMenuOpen(prev => !prev)}
         />
+
+        {/* PWA Mobile Installation & Notification Banner */}
+        <InstallPromptBanner />
 
         {/* Scrollable Viewport */}
         <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 bg-navy-900/90 relative">

@@ -76,13 +76,32 @@ export class StorageService {
    */
   private static migrateState(stored: any): WorkPulseState {
     if (stored.version === '1.0.0') {
-      // Ensure all arrays and user settings are populated
+      const mergedSettings = { ...INITIAL_SAMPLE_STATE.userSettings, ...(stored.userSettings || {}) };
+      // Upgrade default reminder to 22:00 (10:00 PM) if it was still the old 17:30 default
+      if (mergedSettings.reminderTime === '17:30') {
+        mergedSettings.reminderTime = '22:00';
+      }
+      if (mergedSettings.notificationEnabled === undefined) {
+        mergedSettings.notificationEnabled = true;
+      }
+      if (mergedSettings.excludeWeekends === undefined) {
+        mergedSettings.excludeWeekends = true;
+      }
+
+      // Upgrade default schedule reminder if needed
+      const schedules = (Array.isArray(stored.schedules) ? stored.schedules : INITIAL_SAMPLE_STATE.schedules).map((s: TrackingSchedule) => {
+        if (s.id === 'sched-default' && s.reminderTime === '17:30') {
+          return { ...s, reminderTime: '22:00', name: 'Core Workdays Schedule (10:00 PM Reminder)' };
+        }
+        return s;
+      });
+
       return {
         version: '1.0.0',
-        userSettings: { ...INITIAL_SAMPLE_STATE.userSettings, ...(stored.userSettings || {}) },
+        userSettings: mergedSettings,
         tasks: Array.isArray(stored.tasks) ? stored.tasks : INITIAL_SAMPLE_STATE.tasks,
         dailyReports: Array.isArray(stored.dailyReports) ? stored.dailyReports : INITIAL_SAMPLE_STATE.dailyReports,
-        schedules: Array.isArray(stored.schedules) ? stored.schedules : INITIAL_SAMPLE_STATE.schedules,
+        schedules,
         blockers: Array.isArray(stored.blockers) ? stored.blockers : INITIAL_SAMPLE_STATE.blockers,
         doubts: Array.isArray(stored.doubts) ? stored.doubts : INITIAL_SAMPLE_STATE.doubts,
         learningEntries: Array.isArray(stored.learningEntries) ? stored.learningEntries : INITIAL_SAMPLE_STATE.learningEntries,
@@ -112,11 +131,11 @@ export class StorageService {
       schedules: [
         {
           id: 'sched-default',
-          name: 'Core Workdays Schedule',
+          name: 'Core Workdays Schedule (10:00 PM Reminder)',
           frequency: 'Daily',
           startDate: CURRENT_DATE_STR,
           expectedDays: [1, 2, 3, 4, 5],
-          reminderTime: userSettings?.reminderTime || '17:30',
+          reminderTime: userSettings?.reminderTime || '22:00',
           timezone: userSettings?.timezone || INITIAL_SAMPLE_STATE.userSettings.timezone,
           isActive: true
         }

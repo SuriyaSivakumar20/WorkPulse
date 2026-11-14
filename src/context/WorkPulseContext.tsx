@@ -14,6 +14,8 @@ import {
 } from '../types';
 import { StorageService, MissedPeriod } from '../services/storageService';
 import { CURRENT_DATE_STR } from '../services/sampleData';
+import { notificationService } from '../services/notificationService';
+import { pwaService, PWAInstallState } from '../services/pwaService';
 
 interface WorkPulseContextType {
   state: WorkPulseState;
@@ -53,6 +55,12 @@ interface WorkPulseContextType {
   updateUserSettings: (settings: UserSettings) => void;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
+  sendTestNotification: () => Promise<boolean>;
+  requestNotificationPermission: () => Promise<string>;
+  
+  // PWA App Installation
+  pwaState: PWAInstallState;
+  installApp: () => Promise<'accepted' | 'dismissed' | 'ios' | 'unavailable'>;
   
   // Data actions
   resetToSampleData: () => void;
@@ -358,6 +366,64 @@ export const WorkPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     showToast('All notifications marked as read.');
   }, [showToast]);
 
+  const [pwaState, setPwaState] = useState<PWAInstallState>(() => pwaService.getState());
+
+  // Subscribe to PWA install state updates
+  useEffect(() => {
+    return pwaService.subscribe((newState) => {
+      setPwaState(newState);
+    });
+  }, []);
+
+  // Listen to scheduled 10:00 PM weekday reminder triggers
+  useEffect(() => {
+    const unsubscribe = notificationService.onReminderTrigger((date) => {
+      const newNotif: InAppNotification = {
+        id: `notif-reminder-${Date.now()}`,
+        type: 'reminder',
+        title: '10:00 PM Daily Log Reminder',
+        message: "It's 10:00 PM! Don't forget to submit your daily work log, record blockers, and prepare tomorrow's plan.",
+        date: date.toISOString(),
+        read: false,
+        linkSection: 'daily-logs'
+      };
+      setState(prev => ({
+        ...prev,
+        notifications: [newNotif, ...prev.notifications]
+      }));
+      showToast("10:00 PM Reminder: Time to log today's work.");
+    });
+    return unsubscribe;
+  }, [showToast]);
+
+  const sendTestNotification = useCallback(async (): Promise<boolean> => {
+    const success = await notificationService.sendTestNotification();
+    if (success) {
+      showToast('Test notification sent! Check your device notifications.');
+    } else {
+      showToast('Notification permission is required to receive reminders.');
+    }
+    return success;
+  }, [showToast]);
+
+  const requestNotificationPermission = useCallback(async (): Promise<string> => {
+    const result = await notificationService.requestPermission();
+    if (result === 'granted') {
+      showToast('Notifications enabled! Daily 10:00 PM reminders are active.');
+    } else if (result === 'denied') {
+      showToast('Notifications blocked in browser settings. Please enable them to get reminders.');
+    }
+    return result;
+  }, [showToast]);
+
+  const installApp = useCallback(async () => {
+    const outcome = await pwaService.promptInstall();
+    if (outcome === 'accepted') {
+      showToast('WorkPulse installed successfully!');
+    }
+    return outcome;
+  }, [showToast]);
+
   // Restore & Reset
   const resetToSampleData = useCallback(() => {
     const defaultState = StorageService.resetToDemonstrationData();
@@ -405,6 +471,10 @@ export const WorkPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         updateUserSettings,
         markNotificationRead,
         markAllNotificationsRead,
+        sendTestNotification,
+        requestNotificationPermission,
+        pwaState,
+        installApp,
         resetToSampleData,
         clearAllData,
         restoreFromJSON,

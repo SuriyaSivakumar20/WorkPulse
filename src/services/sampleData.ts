@@ -18,18 +18,20 @@ export const INITIAL_NEW_USER_STATE: WorkPulseState = {
     userRole: 'Software Engineer',
     userInitials: 'NU',
     timezone: typeof Intl !== 'undefined' && Intl.DateTimeFormat ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata') : 'Asia/Kolkata',
-    reminderTime: '17:30',
+    reminderTime: '22:00', // 10:00 PM
     defaultFrequency: 'Daily',
-    defaultExpectedDays: [1, 2, 3, 4, 5], // Monday to Friday
+    defaultExpectedDays: [1, 2, 3, 4, 5], // Monday to Friday (excl. Sat & Sun)
+    notificationEnabled: true,
+    excludeWeekends: true,
   },
   schedules: [
     {
       id: 'sched-default',
-      name: 'Core Workdays Schedule',
+      name: 'Core Workdays Schedule (10:00 PM Reminder)',
       frequency: 'Daily',
       startDate: CURRENT_DATE_STR,
-      expectedDays: [1, 2, 3, 4, 5],
-      reminderTime: '17:30',
+      expectedDays: [1, 2, 3, 4, 5], // Monday to Friday
+      reminderTime: '22:00',
       timezone: typeof Intl !== 'undefined' && Intl.DateTimeFormat ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata') : 'Asia/Kolkata',
       isActive: true,
     }

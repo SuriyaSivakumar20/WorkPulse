@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   FileEdit,
-  ExternalLink
+  ExternalLink,
+  Smartphone
 } from 'lucide-react';
 import { useWorkPulse } from '../../context/WorkPulseContext';
 import { CURRENT_DATE_STR } from '../../services/sampleData';
@@ -27,7 +28,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, isMobileMenu
     setSelectedReportDate,
     markNotificationRead,
     markAllNotificationsRead,
-    isTodayReportSubmitted
+    isTodayReportSubmitted,
+    pwaState,
+    installApp
   } = useWorkPulse();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -104,6 +107,18 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, isMobileMenu
             {state.userSettings.timezone}
           </span>
         </div>
+
+        {/* Quick App Install Button */}
+        {!pwaState.isInstalled && (
+          <button
+            onClick={installApp}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-navy-800 hover:bg-navy-750 border border-gold-500/50 text-gold-400 text-xs font-mono transition-colors shadow-geometric-navy"
+            title="Install WorkPulse as Web Application"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span className="font-bold">INSTALL APP</span>
+          </button>
+        )}
 
         {/* Create/Edit Daily Report Fast Action */}
         <button

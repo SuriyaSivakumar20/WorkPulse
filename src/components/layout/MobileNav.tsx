@@ -9,7 +9,10 @@ import {
   GraduationCap,
   FileText,
   Settings,
-  X
+  X,
+  Smartphone,
+  Download,
+  CheckCircle2
 } from 'lucide-react';
 import { useWorkPulse } from '../../context/WorkPulseContext';
 import { NavigationSection } from '../../types';
@@ -20,7 +23,7 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
-  const { activeSection, setActiveSection, state, missedStats } = useWorkPulse();
+  const { activeSection, setActiveSection, state, missedStats, pwaState, installApp } = useWorkPulse();
 
   if (!isOpen) return null;
 
@@ -110,15 +113,37 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
-        {/* User Info */}
-        <div className="p-4 border-t border-navy-500 bg-navy-950">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-navy-800 border border-gold-500 flex items-center justify-center font-display text-gold-500 text-xs">
-              {state.userSettings.userInitials}
+        {/* PWA Mobile App Shortcut & User Info */}
+        <div>
+          {!pwaState.isInstalled ? (
+            <div className="p-3 border-t border-navy-700 bg-navy-950/80">
+              <button
+                onClick={async () => {
+                  await installApp();
+                  onClose();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs tracking-wider transition-colors shadow-geometric-gold"
+              >
+                <Smartphone className="w-4 h-4" />
+                <span>INSTALL WEB APP</span>
+              </button>
             </div>
-            <div className="text-xs">
-              <div className="font-bold text-cream-200">{state.userSettings.userName}</div>
-              <div className="text-[10px] text-slate-450">{state.userSettings.userRole}</div>
+          ) : (
+            <div className="px-4 py-2 border-t border-navy-700 bg-navy-950/80 flex items-center gap-2 text-[10px] font-mono text-emerald-400">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>RUNNING AS WEB APP</span>
+            </div>
+          )}
+
+          <div className="p-4 border-t border-navy-500 bg-navy-950">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-navy-800 border border-gold-500 flex items-center justify-center font-display text-gold-500 text-xs">
+                {state.userSettings.userInitials}
+              </div>
+              <div className="text-xs">
+                <div className="font-bold text-cream-200">{state.userSettings.userName}</div>
+                <div className="text-[10px] text-slate-450">{state.userSettings.userRole}</div>
+              </div>
             </div>
           </div>
         </div>
